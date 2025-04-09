@@ -245,19 +245,14 @@ public:
     {
         for (const auto &face : faces)
         {
-            objects.emplace_back(new Triangle(
-                                     vertices[face.verticeIndice[0]],
-                                     vertices[face.verticeIndice[1]],
-                                     vertices[face.verticeIndice[2]],
-                                     normals[face.normalIndice[0]]),
-                                 face.kd * 255,
-                                 face.ka, face.kd, face.ks, face.ke, 1 - face.d, face.ns, face.ni);
+            objects.emplace_back(facetoTriang(face),
+                                 face.kd * 255, face.ka, face.kd, face.ks, face.ke, 1 - face.d, face.ns, face.ni);
         }
     }
 
-    Triangle facetoTriang(Face &face)
+    Triangle* facetoTriang(Face const &face)
     {
-        return Triangle(
+        return new Triangle(
             vertices[face.verticeIndice[0]],
             vertices[face.verticeIndice[1]],
             vertices[face.verticeIndice[2]],

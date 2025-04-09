@@ -33,7 +33,6 @@ std::vector<Material> objects;
 
 Vector Material::shade(Point *point, Vector view, Vector *normal)
 {
-    // Vector resColor = color.elementWiseMultiplication(ambientLight.elementWiseMultiplication(ka));
     Vector resColor = ambientLight.elementWiseMultiplication(ka);
 
     for (Light light : lights)
@@ -52,7 +51,6 @@ Vector Material::shade(Point *point, Vector view, Vector *normal)
             if (dotdiff > almostZero)
             {
                 resColor = resColor + color.elementWiseMultiplication(light.color).elementWiseMultiplication(kd) * dotdiff * light.intensity;
-                // resColor = resColor + light.color.elementWiseMultiplication(kd) * dotdiff * light.intensity;
             }
 
             double dotspec = r.dot(view);
@@ -80,9 +78,5 @@ std::tuple<Material *, double> Material::nearest(Ray ray)
             hit = &material;
         }
     }
-    if (intersectT != INFINITY)
-    {
-        return std::make_tuple(hit, intersectT);
-    }
-    return std::make_tuple(hit, INFINITY);
+    return std::make_tuple(hit, intersectT);
 }
