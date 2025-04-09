@@ -7,7 +7,6 @@ const float almostZero = 1e-8f;
 class Shape
 {
 public:
-
     virtual double rayIntersect(Ray &ray) { return {}; }
 
     virtual Vector getNormal(Ray &ray, const double t) { return {}; }
@@ -15,12 +14,12 @@ public:
     virtual Point getPoint() { return {}; }
 
     /*
-    Para o funcionamento ideal desse método, aplique uma única operação 
+    Para o funcionamento ideal desse método, aplique uma única operação
     a partir de um operador montado previamente por uma sequência de outros operadores.
 
     Caso seja aplicada diversas transformações, podem ocorrer erros de aproximação
     devido a normalização de vetores que ocorre após a aplicação da transformação.
-    Quanto mais discrepantes as proporções entre os valores da matriz 
+    Quanto mais discrepantes as proporções entre os valores da matriz
     e os dos vetores, mais chance de erro após sucessivas transformações
     */
     virtual void applyTransform(const Matrix &transformMatrix) { return; }
@@ -76,26 +75,26 @@ public:
         return -1;
     }
 
-    void applyTransform(const Matrix &transformMatrix) 
+    void applyTransform(const Matrix &transformMatrix)
     {
         center = transformMatrix * center;
 
         /*
         Extraindo o fator de escala da matriz de transformação composta:
-        Excluindo a quarta linha e a quarta coluna, as colunas  
+        Excluindo a quarta linha e a quarta coluna, as colunas
         da matriz resultante representam vetores de uma base do R3.
         Pegamos a magnitude de cada vetor para saber o fator de escala em cada direcao.
         */
-        double sx = sqrt(pow(transformMatrix(0,0),2) + pow(transformMatrix(1,0),2) + pow(transformMatrix(2,0),2)); // vetor i transformado
-        double sy = sqrt(pow(transformMatrix(0,1),2) + pow(transformMatrix(1,1),2) + pow(transformMatrix(2,1),2)); // vetor j transformado
-        double sz = sqrt(pow(transformMatrix(0,2),2) + pow(transformMatrix(1,2),2) + pow(transformMatrix(2,2),2)); // vetor k transformado
+        double sx = sqrt(pow(transformMatrix(0, 0), 2) + pow(transformMatrix(1, 0), 2) + pow(transformMatrix(2, 0), 2)); // vetor i transformado
+        double sy = sqrt(pow(transformMatrix(0, 1), 2) + pow(transformMatrix(1, 1), 2) + pow(transformMatrix(2, 1), 2)); // vetor j transformado
+        double sz = sqrt(pow(transformMatrix(0, 2), 2) + pow(transformMatrix(1, 2), 2) + pow(transformMatrix(2, 2), 2)); // vetor k transformado
 
         /*
         Aproximacao:
-        Calculamos a media das escalas em cada eixo 
+        Calculamos a media das escalas em cada eixo
         para que seja isotropica e mantenha a forma de esfera
         */
-        double scaleFactor = (sx+sy+sz)/3;
+        double scaleFactor = (sx + sy + sz) / 3;
 
         R *= scaleFactor;
     }
@@ -144,9 +143,9 @@ public:
         return -1;
     }
 
-    void applyTransform(const Matrix &transformMatrix) 
+    void applyTransform(const Matrix &transformMatrix)
     {
-        P0 = transformMatrix*P0;
+        P0 = transformMatrix * P0;
         normalVec = (transformMatrix * normalVec).normalize();
     }
 };
@@ -163,7 +162,6 @@ public:
     Vector normalVec;
     Vector edge0, edge1;
     double dot00, dot01, dot11, denom;
-    
     Triangle(Point p0, Point p1, Point p2, Vector normalVec) : Plane(normalVec, p0), p0(p0), p1(p1), p2(p2)
     {
         edge0 = p1 - p0;
@@ -200,7 +198,7 @@ public:
         return t;
     }
 
-    void applyTransform(const Matrix &transformMatrix) 
+    void applyTransform(const Matrix &transformMatrix)
     {
         p0 = transformMatrix * p0;
         p1 = transformMatrix * p1;

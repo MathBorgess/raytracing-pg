@@ -11,6 +11,7 @@
 #include "src/Ray.hpp"
 #include "src/Vector.hpp"
 #include "src/MaterialObjReader.hpp"
+#include "src/bezier.hpp"
 
 using namespace std;
 
@@ -75,6 +76,29 @@ int main()
         {
             cin >> ambientLight;
             ambientLight = ambientLight / 255.0;
+        }
+        else if (input == 'b')
+        {
+            int resolution, points, curves;
+            cin >> resolution >> points >> curves;
+            std::vector<Vector> controlPoints;
+            for (int i = 0; i < points; i++)
+            {
+                Vector p;
+                cin >> p;
+                controlPoints.push_back(p);
+            }
+
+            Face face;
+
+            face.ns = 250;
+            face.ka = Vector(0.1, 0.1, 0.1);
+            face.kd = Vector(0.800836, 0.0, 0.005772);
+            face.ks = Vector(0.5, 0.5, 0.5);
+            face.ke = Vector(0.2, 0.2, 0.2);
+            face.ni = 1.45;
+            face.d = 1.0;
+            Bezier::generateRevolution(controlPoints, resolution, objects, face, curves);
         }
         else if (input == 'e')
         {
