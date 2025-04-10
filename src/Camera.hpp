@@ -1,8 +1,12 @@
-#include "RayTrace.hpp"
-#include <fstream>
-
 #ifndef CAMERAHEADER
 #define CAMERAHEADER
+
+#include "RayTrace.hpp"
+#include <fstream>
+#include <chrono>
+
+using namespace std::chrono;
+
 
 class Camera
 {
@@ -36,6 +40,7 @@ public:
         std::ofstream ppm;
         ppm.open("render.ppm");
         std::cout << "Rendering..." << std::endl;
+        auto start = high_resolution_clock::now();
 
         Point topleftPixel = camPosition + W * (f / 2) + (V * (vres - 1) * pixelH + U * (hres - 1) * pixelW) / 2.0;
         ppm << "P3" << std::endl;
@@ -52,6 +57,10 @@ public:
             }
         }
         ppm.close();
+
+        auto stop = high_resolution_clock::now();
+        auto duration = duration_cast<seconds>(stop - start);
+        std::cout << "Rendered in: " << duration.count() << " seconds." << std::endl;
     }
     ~Camera() {};
 };

@@ -6,7 +6,7 @@
 #ifndef TRANSFORMHPP
 #define TRANSFORMHPP
 
-constexpr double PI = 3.1415926536;
+const double PI = std::acos(-1);
 constexpr double zeroTrig = 1e-6;
 
 inline bool isAlmostZero(double value) {
