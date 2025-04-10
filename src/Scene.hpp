@@ -1,5 +1,6 @@
-#ifndef LIGHTHEADER
-#define LIGHTHEADER
+#ifndef SCENEHEADER
+#define SCENEHEADER
+
 struct Light
 {
     Point position;

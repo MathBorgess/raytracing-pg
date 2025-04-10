@@ -12,6 +12,7 @@
 #include "src/Vector.hpp"
 #include "src/MaterialObjReader.hpp"
 #include "src/bezier.hpp"
+#include "src/Octree.hpp"
 
 using namespace std;
 
@@ -105,6 +106,13 @@ int main()
             break;
         }
     }
+    
+    AABB sceneBounds = OctreeNode::computeSceneBounds(objects);
+    octree = new OctreeNode(sceneBounds);
+    for (Material& material : objects) {
+        octree->insert(&material);
+    }
+
     camera->render(f, ttl);
 
     return 0;

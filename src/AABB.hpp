@@ -1,3 +1,5 @@
+#ifndef AABBHEADER
+#define AABBHEADER
 class AABB {
 public:
     Point min;
@@ -47,18 +49,6 @@ public:
 
         return AABB(small, big);
     }
-
-    static AABB computeSceneBounds(std::vector<Material> objects) {
-        if (objects.empty()) return AABB();
-    
-        AABB firstBox = objects[0].getShape()->getBoundingBox();
-        AABB sceneBox = firstBox;
-    
-        for (size_t i = 1; i < objects.size(); ++i) {
-            AABB box = objects[i].getShape()->getBoundingBox();
-            sceneBox = AABB::surroundingBox(sceneBox, box);
-        }
-    
-        return sceneBox;
-    }
 };
+
+#endif

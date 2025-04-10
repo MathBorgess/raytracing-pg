@@ -1,8 +1,12 @@
+#ifndef SHAPESHEADER
+#define SHAPESHEADER
+
 #include "Point.hpp"
 #include "Ray.hpp"
 #include "Transform.hpp"
+#include "AABB.hpp"
 
-const float almostZero = 1e-8f;
+inline const float almostZero = 1e-8f;
 
 class Shape
 {
@@ -25,6 +29,8 @@ public:
     virtual void applyTransform(const Matrix &transformMatrix) { return; }
 
     virtual Matrix getTransform() const { return Matrix(); }
+    
+    virtual AABB getBoundingBox() const { return AABB(); }
 };
 
 #ifndef SPHEREHEADER
@@ -35,9 +41,12 @@ class Sphere : public Shape
 public:
     Point center;
     double R;
+    AABB boundingBox;
     Sphere(Point center, double radius) : center(center)
     {
         R = radius;
+        boundingBox = AABB(center - Vector(R, R, R), center + Vector(R, R, R));
+
     }
 
     // retorna centro da esfera
@@ -73,6 +82,11 @@ public:
             return t0;
 
         return -1;
+    }
+    
+    AABB getBoundingBox() const override
+    {
+        return boundingBox;
     }
 
     void applyTransform(const Matrix &transformMatrix)
@@ -160,8 +174,10 @@ class Triangle : public Plane
 public:
     Point p0, p1, p2;
     Vector normalVec;
+    AABB boundingBox;
     Vector edge0, edge1;
     double dot00, dot01, dot11, denom;
+
     Triangle(Point p0, Point p1, Point p2, Vector normalVec) : Plane(normalVec, p0), p0(p0), p1(p1), p2(p2)
     {
         edge0 = p1 - p0;
@@ -170,6 +186,16 @@ public:
         dot01 = edge0.dot(edge1);
         dot11 = edge1.dot(edge1);
         denom = dot00 * dot11 - dot01 * dot01;
+
+        double minX = fmin(fmin(p0.getX(), p1.getX()), p2.getX());
+        double minY = fmin(fmin(p0.getY(), p1.getY()), p2.getY());
+        double minZ = fmin(fmin(p0.getZ(), p1.getZ()), p2.getZ());
+    
+        double maxX = fmax(fmax(p0.getX(), p1.getX()), p2.getX());
+        double maxY = fmax(fmax(p0.getY(), p1.getY()), p2.getY());
+        double maxZ = fmax(fmax(p0.getZ(), p1.getZ()), p2.getZ());
+    
+        boundingBox = AABB(Point(minX, minY, minZ), Point(maxX, maxY, maxZ));
     }
 
     double rayIntersect(Ray &ray)
@@ -198,6 +224,11 @@ public:
         return t;
     }
 
+    AABB getBoundingBox() const override
+    {
+        return boundingBox;
+    }
+
     void applyTransform(const Matrix &transformMatrix)
     {
         p0 = transformMatrix * p0;
@@ -208,3 +239,5 @@ public:
 };
 
 #endif
+
+#endif // SHAPEHEADER

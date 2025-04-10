@@ -1,4 +1,5 @@
 #include <tuple>
+#include "Octree.hpp"
 
 struct RayCastResult
 {
@@ -8,6 +9,29 @@ struct RayCastResult
 
     RayCastResult(Material *hit, Vector color, Ray reflectedRay) : hit(hit), color(color), reflectedRay(reflectedRay) {}
 };
+
+std::tuple<Material *, double> Material::nearest(Ray ray)
+{
+    if (octree) {
+        return octree->nearest(ray);
+    }
+
+    // Keep linear shearch for fallback until octree is validated
+    Material *hit = nullptr;
+    double intersectT = INFINITY;
+
+    for (Material &material : objects)
+    {
+        double t = material.getShape()->rayIntersect(ray);
+
+        if (t > almostZero && t < intersectT)
+        {
+            intersectT = t;
+            hit = &material;
+        }
+    }
+    return std::make_tuple(hit, intersectT);
+}
 
 RayCastResult rayCast(Ray ray)
 {

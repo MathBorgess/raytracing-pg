@@ -1,3 +1,6 @@
+#ifndef MATERIALHEADER
+#define MATERIALHEADER
+
 #include <tuple>
 
 class Material
@@ -63,20 +66,6 @@ Vector Material::shade(Point *point, Vector view, Vector *normal)
     return resColor;
 }
 
-std::tuple<Material *, double> Material::nearest(Ray ray)
-{
-    Material *hit = nullptr;
-    double intersectT = INFINITY;
 
-    for (Material &material : objects)
-    {
-        double t = material.getShape()->rayIntersect(ray);
 
-        if (t > almostZero && t < intersectT)
-        {
-            intersectT = t;
-            hit = &material;
-        }
-    }
-    return std::make_tuple(hit, intersectT);
-}
+#endif

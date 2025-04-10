@@ -2,15 +2,12 @@
 #define OCTREEHEADER
 
 #include <vector>
-#include <tuple>
-#include <limits>
-#include <algorithm>
-#include "AABB.hpp"
-#include "Point.hpp"
+#include "Material.hpp"
 #include "Shapes.hpp"
 
 class OctreeNode {
 private:
+
     void subdivide() {
         Point min = bounds.min;
         Point max = bounds.max;
@@ -77,7 +74,7 @@ public:
     }
 
     std::tuple<Material*, double> nearest(const Ray& ray) {
-        if (!bounds.intersects(ray)) return {nullptr, INFINITY};
+        if (!bounds.intersects(ray)) return std::make_tuple(nullptr, INFINITY);
 
         Material* hit = nullptr;
         double closestT = INFINITY;
@@ -102,11 +99,24 @@ public:
             }
         }
 
-        return {hit, closestT};
+        return std::make_tuple(hit, closestT);
+    }
+
+    const static AABB computeSceneBounds(const std::vector<Material>& objects) {
+        if (objects.empty()) return AABB();
+    
+        AABB firstBox = objects[0].getShape()->getBoundingBox();
+        AABB sceneBox = firstBox;
+    
+        for (size_t i = 1; i < objects.size(); ++i) {
+            AABB box = objects[i].getShape()->getBoundingBox();
+            sceneBox = AABB::surroundingBox(sceneBox, box);
+        }
+    
+        return sceneBox;
     }
 
 };
 
-#endif
-
 OctreeNode* octree = nullptr;
+#endif
