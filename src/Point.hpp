@@ -95,4 +95,52 @@ inline Point operator*(double scalar, Point p)
     return Point(p.x * scalar, p.y * scalar, p.z * scalar);
 }
 
+inline Point minBound(const Point& a, const Point& b) {
+    return Point(
+        std::min(a.getX(), b.getX()),
+        std::min(a.getY(), b.getY()),
+        std::min(a.getZ(), b.getZ())
+    );
+}
+
+inline Point maxBound(const Point& a, const Point& b) {
+    return Point(
+        std::max(a.getX(), b.getX()),
+        std::max(a.getY(), b.getY()),
+        std::max(a.getZ(), b.getZ())
+    );
+}
+
+inline Point minBound(const std::vector<Point>& points) {
+    if (points.empty()) return Point(0, 0, 0); 
+
+    double minX = points[0].getX();
+    double minY = points[0].getY();
+    double minZ = points[0].getZ();
+
+    for (const Point& p : points) {
+        minX = std::min(minX, p.getX());
+        minY = std::min(minY, p.getY());
+        minZ = std::min(minZ, p.getZ());
+    }
+
+    return Point(minX, minY, minZ);
+}
+
+inline Point maxBound(const std::vector<Point>& points) {
+    if (points.empty()) return Point(0, 0, 0);
+
+    double maxX = points[0].getX();
+    double maxY = points[0].getY();
+    double maxZ = points[0].getZ();
+
+    for (const Point& p : points) {
+        maxX = std::max(maxX, p.getX());
+        maxY = std::max(maxY, p.getY());
+        maxZ = std::max(maxZ, p.getZ());
+    }
+
+    return Point(maxX, maxY, maxZ);
+}
+
 #endif

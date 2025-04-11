@@ -29,7 +29,11 @@ public:
 
     Vector shade(Point *point, Vector view, Vector *normal);
 
+    // Linear search for nearest material
     static std::tuple<Material *, double> nearest(Ray ray);
+    
+    // Octree search for nearest material
+    static std::tuple<Material *, double> nearestOctree(Ray ray);
 };
 
 std::vector<Material> objects;
@@ -46,7 +50,8 @@ Vector Material::shade(Point *point, Vector view, Vector *normal)
 
         double t;
         Material *shadow;
-        std::tie(shadow, t) = Material::nearest(Ray(*point, light.position));
+        // std::tie(shadow, t) = Material::nearest(Ray(*point, light.position));
+        std::tie(shadow, t) = Material::nearestOctree(Ray(*point, light.position));
 
         if (shadow == nullptr || lightDirection.dot(light.position - *point) < t)
         {

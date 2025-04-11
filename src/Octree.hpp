@@ -58,7 +58,7 @@ public:
 
         if (children[0] == nullptr) {
             subdivide();
-            // Re-distribuir objetos já existentes
+            // Redistribuir objetos já existentes
             std::vector<Material*> toReinsert = nodeObjs;
             nodeObjs.clear();
             for (Material* m : toReinsert) {

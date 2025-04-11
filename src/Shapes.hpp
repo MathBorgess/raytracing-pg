@@ -40,8 +40,9 @@ class Sphere : public Shape
 {
 public:
     Point center;
-    double R;
     AABB boundingBox;
+    double R;
+
     Sphere(Point center, double radius) : center(center)
     {
         R = radius;
@@ -124,17 +125,29 @@ class Plane : public Shape
 public:
     Vector normalVec;
     Point P0;
+    AABB boundingBox;
 
     Plane(Vector normal, Point planePoint)
     {
         normalVec = normal.normalize();
         P0 = planePoint;
+        boundingBox = AABB();
     }
 
     // retorna ponto usado para formar o plano
     Point getPoint()
     {
         return P0;
+    }
+
+    void setPlaneBB(const AABB& sceneBounds)
+    {
+        boundingBox = sceneBounds;
+    }
+
+    AABB getBoundingBox() const override
+    {
+        return boundingBox;
     }
 
     Vector getNormal(Ray &ray, const double t)
@@ -173,8 +186,8 @@ class Triangle : public Plane
 {
 public:
     Point p0, p1, p2;
-    Vector normalVec;
     AABB boundingBox;
+    Vector normalVec;
     Vector edge0, edge1;
     double dot00, dot01, dot11, denom;
 
@@ -187,15 +200,10 @@ public:
         dot11 = edge1.dot(edge1);
         denom = dot00 * dot11 - dot01 * dot01;
 
-        double minX = fmin(fmin(p0.getX(), p1.getX()), p2.getX());
-        double minY = fmin(fmin(p0.getY(), p1.getY()), p2.getY());
-        double minZ = fmin(fmin(p0.getZ(), p1.getZ()), p2.getZ());
+        Point small = minBound(minBound(p0, p1), p2);
+        Point big = maxBound(maxBound(p0, p1), p2);
     
-        double maxX = fmax(fmax(p0.getX(), p1.getX()), p2.getX());
-        double maxY = fmax(fmax(p0.getY(), p1.getY()), p2.getY());
-        double maxZ = fmax(fmax(p0.getZ(), p1.getZ()), p2.getZ());
-    
-        boundingBox = AABB(Point(minX, minY, minZ), Point(maxX, maxY, maxZ));
+        boundingBox = AABB(small, big);
     }
 
     double rayIntersect(Ray &ray)

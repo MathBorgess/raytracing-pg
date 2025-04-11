@@ -1,22 +1,14 @@
 #include <tuple>
 #include "Octree.hpp"
 
-struct RayCastResult
+extern OctreeNode *octree;
+
+std::tuple<Material *, double> Material::nearestOctree(Ray ray)
 {
-    Material *hit;
-    Vector color;
-    Ray reflectedRay;
+    return octree->nearest(ray);
+}
 
-    RayCastResult(Material *hit, Vector color, Ray reflectedRay) : hit(hit), color(color), reflectedRay(reflectedRay) {}
-};
-
-std::tuple<Material *, double> Material::nearest(Ray ray)
-{
-    if (octree) {
-        return octree->nearest(ray);
-    }
-
-    // Keep linear shearch for fallback until octree is validated
+std::tuple<Material *, double> Material::nearest(Ray ray) {
     Material *hit = nullptr;
     double intersectT = INFINITY;
 
@@ -33,14 +25,24 @@ std::tuple<Material *, double> Material::nearest(Ray ray)
     return std::make_tuple(hit, intersectT);
 }
 
-RayCastResult rayCast(Ray ray)
+struct RayCastResult
+{
+    Material *hit;
+    Vector color;
+    Ray reflectedRay;
+
+    RayCastResult(Material *hit, Vector color, Ray reflectedRay) : hit(hit), color(color), reflectedRay(reflectedRay) {}
+};
+
+RayCastResult rayCast(Ray& ray)
 {
     Vector color = ambientLight;
     Material *hit = nullptr;
     double intersectT = INFINITY;
     Point hitPoint;
     Vector normal;
-    std::tie(hit, intersectT) = Material::nearest(ray);
+    // std::tie(hit, intersectT) = Material::nearest(ray);
+    std::tie(hit, intersectT) = Material::nearestOctree(ray);
     if (hit)
     {
         hitPoint = ray.getPoint(intersectT);

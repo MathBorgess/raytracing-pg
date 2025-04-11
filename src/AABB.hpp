@@ -39,13 +39,8 @@ public:
     }
     
     static AABB surroundingBox(const AABB& box0, const AABB& box1) {
-        Point small(fmin(box0.min.getX(), box1.min.getX()),
-                    fmin(box0.min.getY(), box1.min.getY()),
-                    fmin(box0.min.getZ(), box1.min.getZ()));
-
-        Point big(fmax(box0.max.getX(), box1.max.getX()),
-                  fmax(box0.max.getY(), box1.max.getY()),
-                  fmax(box0.max.getZ(), box1.max.getZ()));
+        Point small = minBound(box0.min, box1.min);
+        Point big = maxBound(box0.max, box1.max);
 
         return AABB(small, big);
     }

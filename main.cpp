@@ -16,6 +16,47 @@
 
 using namespace std;
 
+inline Point intersectPlane(Ray ray, Plane& plane) {
+    double t = plane.rayIntersect(ray);
+    if (t > almostZero) {
+        return ray.getPoint(t);
+    }
+    return ray.from;
+}
+
+inline AABB computePlaneBoundingBoxFromCamera(Camera& camera, Point& P0, const Vector& normal, double f) {
+    // Dimensões de pixel
+    double pixelW = 1.0 / camera.hres;
+    double pixelH = 1.0 / camera.vres;
+
+    Vector unitLeft = camera.U * pixelW;
+    Vector unitUp = camera.V * pixelH;
+
+    // Canto superior esquerdo da tela em 3D
+    Point topleft = camera.camPosition + camera.W * (f / 2.0) + 
+        (camera.V * (camera.vres - 1) * pixelH + camera.U * (camera.hres - 1) * pixelW) / 2.0;
+
+    // Cálculo dos 4 cantos da tela
+    Point topLeft     = topleft;
+    Point topRight    = topleft - unitLeft * (camera.hres - 1);
+    Point bottomLeft  = topleft - unitUp * (camera.vres - 1);
+    Point bottomRight = bottomLeft - unitLeft * (camera.hres - 1);
+
+    // Interseções com o plano
+    Plane plane(normal, P0);
+    Point p1 = intersectPlane(Ray(camera.camPosition, topLeft), plane);
+    Point p2 = intersectPlane(Ray(camera.camPosition, topRight), plane);
+    Point p3 = intersectPlane(Ray(camera.camPosition, bottomLeft), plane);
+    Point p4 = intersectPlane(Ray(camera.camPosition, bottomRight), plane);
+
+    // Bounding box
+    std::vector<Point> corners = {p1, p2, p3, p4};
+    Point small = minBound(corners);
+    Point big = maxBound(corners);
+
+    return AABB(small, big);
+}
+
 int main()
 {
 
@@ -52,7 +93,11 @@ int main()
             double kd, ks, ka, kr, kt, ior;
             int roughness;
             cin >> p0 >> n >> o >> kd >> ks >> ka >> kr >> kt >> roughness >> ior;
-            objects.emplace_back(new Plane(n, p0), o, Vector(ka, ka, ka), Vector(kd, kd, kd), Vector(ks, ks, ks), Vector(kr, kr, kr), kt, roughness, ior);
+            
+            Plane* p = new Plane(n, p0);
+            p->setPlaneBB(computePlaneBoundingBoxFromCamera(*camera, p0, n, f));
+
+            objects.emplace_back(p, o, Vector(ka, ka, ka), Vector(kd, kd, kd), Vector(ks, ks, ks), Vector(kr, kr, kr), kt, roughness, ior);
         }
         else if (input == 'o')
         {
@@ -112,7 +157,6 @@ int main()
     for (Material& material : objects) {
         octree->insert(&material);
     }
-
     camera->render(f, ttl);
 
     return 0;
