@@ -170,6 +170,14 @@ public:
         return -1;
     }
 
+    inline Point pointIntersect(Ray ray) {
+        double t = this->rayIntersect(ray);
+        if (t > almostZero) {
+            return ray.getPoint(t);
+        }
+        return ray.from;
+    }
+
     void applyTransform(const Matrix &transformMatrix)
     {
         P0 = transformMatrix * P0;
