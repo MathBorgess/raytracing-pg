@@ -51,25 +51,17 @@ public:
 
         if (!bounds.intersectsBox(objBox)) return;
 
-        if ((nodeObjs.size() < maxObjects || depth >= maxDepth) && children[0] == nullptr) {
+        if (nodeObjs.size() < maxObjects || depth >= maxDepth) {
             nodeObjs.push_back(obj);
             return;
         }
 
         if (children[0] == nullptr) {
             subdivide();
-            // Redistribuir objetos já existentes
-            std::vector<Material*> toReinsert = nodeObjs;
-            nodeObjs.clear();
-            for (Material* m : toReinsert) {
-                insert(m);
-            }
         }
 
         for (int i = 0; i < 8; i++) {
-            if (children[i]->bounds.intersectsBox(objBox)) {
-                children[i]->insert(obj);
-            }
+            children[i]->insert(obj);
         }
     }
 
@@ -108,7 +100,7 @@ public:
         AABB firstBox = objects[0].getShape()->getBoundingBox();
         AABB sceneBox = firstBox;
     
-        for (size_t i = 1; i < objects.size(); ++i) {
+        for (int i = 1; i < objects.size(); ++i) {
             AABB box = objects[i].getShape()->getBoundingBox();
             sceneBox = AABB::surroundingBox(sceneBox, box);
         }

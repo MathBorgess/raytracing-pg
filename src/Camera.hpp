@@ -71,8 +71,8 @@ public:
         ppm.close();
 
         auto stop = high_resolution_clock::now();
-        auto duration = duration_cast<seconds>(stop - start);
-        std::cout << "Rendered in: " << duration.count() << " seconds." << std::endl;
+        auto duration = duration_cast<milliseconds>(stop - start);
+        std::cout << "Rendered in: " << duration.count() / 1000.0 << " seconds." << std::endl;
     }
 
 };
